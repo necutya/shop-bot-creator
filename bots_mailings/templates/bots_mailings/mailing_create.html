@@ -3,18 +3,7 @@
 {% block title %} Создать рыссылку для канала {% endblock %}
 
 {% block links %}
-    <a href="{% url 'bots-management:channel-list' %}"
-       class="text-dark text-decoration-none">
-        Каналы
-    </a><span class="text-dark">/</span>
-    <a href="{% url 'bots-management:channel-detail' form.channel.value.slug  %}"
-       class="text-dark text-decoration-none">
-        {{ form.channel.value }}
-    </a><span class="text-muted">/</span>
-    <a href="{% url 'bots-management:mailings:mailing-list' form.channel.value.slug  %}"
-       class="text-dark text-decoration-none">
-        Рассылки
-    </a><span class="text-muted">/Создание</span>
+    <span class="text-muted">/Создание</span>
 
 {% endblock %}
 
@@ -40,20 +29,18 @@
 
             {% endif %}
         {% endfor %}
-        <div class="mt-3 mb-3">
-            <a href="{% url 'bots-management:keyboards:action-create' channel.slug %}" class="btn btn-info">Добавить</a>
-        </div>
+
         <input type="submit" class="btn btn-success" value="Створити">
         <a href="{% url "bots-management:mailings:mailing-list" channel.slug %}" class="btn btn-danger">Отменить</a>
     </form>
 {% endblock %}
 
 {% block scripts %}
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet"/>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.js"></script>
     <script>
-        $(document).ready(function() {
-        $('.js-example-basic-multiple').select2();
+        $(document).ready(function () {
+            $('.js-example-basic-multiple').select2();
         });
     </script>
 {% endblock scripts %}

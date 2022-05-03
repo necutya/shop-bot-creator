@@ -58,7 +58,6 @@ class MailingForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['author'].initial = user
         self.fields['bot'].initial = get_bot_by_slug(channel_slug)
-        self.fields['actions'].queryset = None,
         self.fields['send_to'].queryset = Subscriber.objects.filter(
                     bot=get_bot_by_slug(channel_slug),
                     is_active=True

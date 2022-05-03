@@ -3,18 +3,8 @@
 {% block title %} Розссылки {% endblock %}
 
 {% block links %}
-    <a href="{% url 'bots-management:channel-list' %}"
-       class="text-dark text-decoration-none">
-        Каналы
-    </a><span class="text-dark">/</span>
-    <a href="{% url 'bots-management:channel-detail' mailing.channel.slug %}"
-       class="text-dark text-decoration-none">
-        {{ mailing.channel.name }}
-    </a><span class="text-muted">/</span>
-    <a href="{% url 'bots-management:mailings:mailing-list' mailing.channel.slug %}"
-       class="text-dark text-decoration-none">
-        Рассылки
-    </a><span class="text-muted">/</span>
+    Рассылки
+    <span class="text-muted">/</span>
     <a href="{{ mailing.get_absolute_url }}"
        class="text-dark text-decoration-none">
         {{ mailing.id }}
@@ -27,7 +17,7 @@
         <div class="card-header">
             <h3>Рассылка на канал
                 <a href="{{ mailing.channel.get_full_detail_url }}">
-                    {{mailing.channel }}
+                    {{ mailing.channel }}
                 </a>
             </h3>
         </div>
@@ -38,21 +28,22 @@
             {% endif %}
             {% if mailing.send_to %}
                 <p class="card-text">Отправка пользователям:
-                {% for user in mailing.sento.all %}
-                    {{user.name }}
-                {% endfor %}
+                    {% for user in mailing.sento.all %}
+                        {{ user.name }}
+                    {% endfor %}
                 </p>
             {% else %}
                 <p class="card-text">Отправка всем пользователям</p>
             {% endif %}
             <p class="card-text">Доставленно:
-            {% if mailing.is_done %}
-                &#9989;
-            {% else %}
-                &#10060;
-            {% endif %}
+                {% if mailing.is_done %}
+                    &#9989;
+                {% else %}
+                    &#10060;
+                {% endif %}
             </p>
-            <a href="{% url "bots-management:mailings:mailing-list" mailing.channel.slug %}" class="btn btn-primary">К рассылкам</a>
+            <a href="{% url "bots-management:mailings:mailing-list" mailing.bot.slug %}" class="btn btn-primary">К
+                рассылкам</a>
             {% if not mailing.is_done %}
                 <a href="{{ mailing.get_update_url }}" class="btn btn-warning">Редактировать</a>
             {% endif %}

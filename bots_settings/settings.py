@@ -1,10 +1,10 @@
 import os
-import env_file
+from dotenv import load_dotenv
 
 # Use .env file for creating env variables
-env = env_file.get()
+load_dotenv()
 
-SITE_URL = env.get('SITE_URL')
+SITE_URL = os.getenv('SITE_URL')
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -18,8 +18,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "media/"
 MEDIA_DIRS = (os.path.join(BASE_DIR, "media"), "/media/")
 
-SECRET_KEY = env.get('SECRET_KEY')
-DEBUG = bool(int(env.get('DEBUG')))
+SECRET_KEY = os.getenv('SECRET_KEY')
+DEBUG = bool(int(os.getenv('DEBUG')))
 
 TELEGRAM_BASE_URL = "https://api.telegram.org/bot%s/%s"
 
@@ -27,7 +27,7 @@ ROOT_URLCONF = "bots_settings.urls"
 
 APPEND_SLASH = True
 SAVE_MESSAGE = True
-ALLOWED_HOSTS = [env.get('ALLOWED_HOSTS')]
+ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS')]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -38,14 +38,14 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
     "bots_management.apps.BotsManagementConfig",
-    # "keyboards.apps.KeyboardsConfig",
-    "subscribers.apps.SubscribersConfig",
-    "moderators.apps.ModeratorsConfig",
-    "bots_mailings.apps.BotsMailingsConfig",
     "administration.apps.AdministrationConfig",
+    "subscribers.apps.SubscribersConfig",
+    "bots_mailings.apps.BotsMailingsConfig",
+    "moderators.apps.ModeratorsConfig",
     "products.apps.ProductsConfig",
-    "orders.apps.OrdersConfig"
+    "orders.apps.OrdersConfig",
     # "old_code_for_use.analytics.apps.AnalyticsConfig",
+    # "django_nose",
 ]
 
 MIDDLEWARE = [
@@ -79,11 +79,11 @@ WSGI_APPLICATION = "bots_settings.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": env.get('POSTGRES_DB'),
-        "USER": env.get('POSTGRES_USER'),
-        "PASSWORD": env.get('POSTGRES_PASSWORD'),
-        "HOST": env.get('POSTGRES_HOST'),
-        "PORT": int(env.get('POSTGRES_PORT')),
+        "NAME": os.getenv('POSTGRES_DB'),
+        "USER": os.getenv('POSTGRES_USER'),
+        "PASSWORD": os.getenv('POSTGRES_PASSWORD'),
+        "HOST": os.getenv('POSTGRES_HOST'),
+        "PORT": int(os.getenv('POSTGRES_PORT')),
     }
 }
 
@@ -111,9 +111,9 @@ EMAIL_USE_TLS = True
 # EMAIL_USE_SSL = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = env.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = env.get('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = env.get('DEFAULT_FROM_EMAIL')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 
 # Login redirect
 LOGIN_URL = '/login/'
@@ -211,4 +211,14 @@ ADMINS = [(env.get('ADMIN_NAME'), env.get('ADMIN_EMAIL'))]
 DATE_FORMAT = "%d.%m.%Y"
 
 # celery settings looks like redis://localhost:6379
-CELERY_BROKER_URL = env.get('CELERY_BROKER_URL')
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
+
+# Use nose to run all tests
+# TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+# Tell nose to measure coverage on the 'foo' and 'bar' apps
+# NOSE_ARGS = [
+#     '--with-coverage',
+#     '--cover-package=moderators',
+#     '--cover-html'
+# ]

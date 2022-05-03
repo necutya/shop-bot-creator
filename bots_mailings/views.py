@@ -77,7 +77,7 @@ class MailingUpdateView(ModeratorRequiredMixin, UpdateView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
-        kwargs['chan    nel_slug'] = self.kwargs.get('slug')
+        kwargs['channel_slug'] = self.kwargs.get('slug')
         return kwargs
 
     def get_object(self, queryset=None):

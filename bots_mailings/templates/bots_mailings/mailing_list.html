@@ -3,18 +3,6 @@
 {% block title %} Список рассылок {% endblock %}
 
 {% block links %}
-    <a href="{% url 'bots-management:channel-list' %}"
-       class="text-dark text-decoration-none">
-        Каналы
-    </a><span class="text-dark">/</span>
-    <a href="{% url 'bots-management:channel-detail' channel.slug %}"
-       class="text-dark text-decoration-none">
-        {{ channel.name }}
-    </a><span class="text-muted">/</span>
-    <a href="{% url 'bots-management:mailings:mailing-list' channel.slug %}"
-       class="text-dark text-decoration-none">
-        Рассылки
-    </a>
 {% endblock %}
 
 {% block content %}

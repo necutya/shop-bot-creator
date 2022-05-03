@@ -143,7 +143,8 @@ class ModeratorProfileView(LoginRequiredMixin, DetailView):
 
 @csrf_exempt
 def reset_password_ajax(
-        request: HttpRequest) -> Union[HttpResponse, JsonResponse]:
+        request: HttpRequest
+) -> Union[HttpResponse, JsonResponse]:
     """
     Reset password using ajax-request
     """
@@ -175,6 +176,6 @@ def reset_password_ajax(
             return response
         # if invalid username return 404
         else:
-            return JsonResponse({'error': "Неправильні дані"}, status=404)
+            return JsonResponse({'error': "Неправильні дані"}, status=401)
 
-    raise Http404
+    return HttpResponse(status=404)

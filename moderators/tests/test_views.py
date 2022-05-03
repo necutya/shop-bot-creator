@@ -1,5 +1,7 @@
+from django.http import Http404
 from django.test import TestCase
 from django.test import Client
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model, authenticate
 from django.urls import reverse
@@ -10,7 +12,7 @@ class ModeratorRegisterViewTest(TestCase):
     def setUpTestData(cls):
         pass
 
-    def test_unlogin_access(self):
+    def test_view_url(self):
         c = Client()
         response = c.get("/signup/")
         self.assertEqual(response.status_code, 200)
@@ -48,20 +50,18 @@ class ModeratorLoginViewTest(TestCase):
             username="moderator", password="1234"
         )
 
-    def test_unlogin_required(self):
+    def test_view_url(self):
         c = Client()
         response = c.get("/login/")
         self.assertEqual(response.status_code, 200)
 
     def test_view_url_accessible_by_name(self):
         c = Client()
-        c.login(username="super", password="1234")
         response = c.get(reverse("moderators:login"))
         self.assertEqual(response.status_code, 200)
 
     def test_view_uses_correct_template(self):
         c = Client()
-        c.login(username="super", password="1234")
         response = c.get(reverse("moderators:login"))
         self.assertTemplateUsed(response, "moderators/login.html")
 
@@ -312,3 +312,52 @@ class ModeratorProfileViewTest(TestCase):
         response = c.get(reverse("moderators:user-change-password"))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(str(response.context["user"]), "super")
+
+
+class ResetPasswordAjaxViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        get_user_model().objects.create(
+            username="moderator", password="1234"
+        )
+
+    def test_ajax_required(self):
+        c = Client()
+        response = c.post("/reset_password_ajax/", {})
+        self.assertEqual(response.status_code, 404)
+
+    def test_view_url(self):
+        c = Client()
+        response = c.post("/reset_password_ajax/", {}, **{'HTTP_X_REQUESTED_WITH': 'XMLHttpRequest'})
+        self.assertEqual(response.status_code, 401)
+
+    def test_view_url_accessible_by_name(self):
+        c = Client()
+        response = c.post(reverse("moderators:reset-password"), {}, **{'HTTP_X_REQUESTED_WITH': 'XMLHttpRequest'})
+        self.assertEqual(response.status_code, 401)
+
+    def test_view_uses_correct_template(self):
+        c = Client()
+        response = c.post(reverse("moderators:reset-password"), {}, **{'HTTP_X_REQUESTED_WITH': 'XMLHttpRequest'})
+        self.assertTemplateNotUsed(response)
+
+    @patch("moderators.views.generate_password", return_value="123")
+    @patch("moderators.views.send_email")
+    def test_view_reset_password(
+            self,
+            mock_generate_password,
+            mock_send_email,
+    ):
+        c = Client()
+        response = c.post(
+            reverse("moderators:reset-password"),
+            {"username": "moderator",},
+            **{'HTTP_X_REQUESTED_WITH': 'XMLHttpRequest'}
+        )
+        self.assertEqual(response.status_code, 200)
+
+        self.assertTrue(mock_generate_password.called)
+        self.assertTrue(mock_send_email.called)
+
+        user = authenticate(username="moderator", password="123")
+        self.assertNotEqual(user, None)

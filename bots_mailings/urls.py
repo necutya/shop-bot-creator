@@ -27,12 +27,12 @@ urlpatterns = [
         name="mailing-detailed"
     ),
     path(
-        "mailing/<int:pk>/update",
+        "mailing/<int:pk>/update/",
         MailingUpdateView.as_view(),
         name="mailing-update"
     ),
     path(
-        "mailing/<int:pk>/delete",
+        "mailing/<int:pk>/delete/",
         MailingDeleteView.as_view(),
         name="mailing-delete"
     ),

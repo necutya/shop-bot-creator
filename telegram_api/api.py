@@ -306,10 +306,10 @@ def set_webhook(slug: str, host: str, token: str) -> dict:
     webhook = f"https://{host}/telegram_prod/{slug}/"
     url = f"https://api.telegram.org/bot{token}/setWebhook?url={webhook}"
     response = requests.get(url)
-    logger.warning(
-        f"""Set telegram-webhook with ajax {url}.
-            token {token}. Answer: {response.text}"""
-    )
+    # logger.warning(
+    #     f"""Set telegram-webhook with ajax {url}.
+    #         token {token}. Answer: {response.text}"""
+    # )
     return response.json()
 
 

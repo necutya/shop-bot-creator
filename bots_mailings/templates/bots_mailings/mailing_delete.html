@@ -2,26 +2,6 @@
 {% block title%} Удаление рассылки {% endblock %}
 
 {% block links %}
-    <a href="{% url 'bots-management:channel-list' %}"
-       class="text-dark text-decoration-none">
-        Каналы
-    </a><span class="text-dark">/</span>
-    <a href="{% url 'bots-management:channel-detail' mailing.channel.slug %}"
-       class="text-dark text-decoration-none">
-        {{ mailing.channel.name }}
-    </a><span class="text-muted">/</span>
-    <a href="{% url 'bots-management:mailings:mailing-list' mailing.channel.slug %}"
-       class="text-dark text-decoration-none">
-        Рассылки
-    </a><span class="text-muted">/</span>
-    <a href="{{ mailing.get_absolute_url }}"
-       class="text-dark text-decoration-none">
-        {{ mailing.id }}
-    </a><span class="text-muted">/</span>
-    <a href="{{ mailing.get_delete_url }}"
-       class="text-dark text-decoration-none">
-        Удалить
-    </a>
 {% endblock %}
 
 {% block content %}
@@ -29,7 +9,7 @@
         <p>Вы действительно желаете удалить рассылку?</p>
         <p class="text-warning">Рассылки в мессенджере Telegram могут быть удалены только в течении 48 часов после отправки</p>
         <input type="submit" class="btn btn-danger" value="Подтвержаю">
-        <a href="{% url 'bots-management:mailings:mailing-list' mailing.channel.slug %}" class="btn btn-info">
+        <a href="{% url 'bots-management:mailings:mailing-list' mailing.bot.slug %}" class="btn btn-info">
             Отменить
         </a>
     </form>

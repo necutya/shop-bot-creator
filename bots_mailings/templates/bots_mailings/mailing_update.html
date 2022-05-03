@@ -3,26 +3,6 @@
 {% block title %} редактировать рассылку на канал {% endblock %}
 
 {% block links %}
-    <a href="{% url 'bots-management:channel-list' %}"
-       class="text-dark text-decoration-none">
-        Каналы
-    </a><span class="text-dark">/</span>
-    <a href="{% url 'bots-management:channel-detail' mailing.channel.slug  %}"
-       class="text-dark text-decoration-none">
-        {{ mailing.channel.name }}
-    </a><span class="text-muted">/</span>
-    <a href="{% url 'bots-management:mailings:mailing-list' mailing.channel.slug %}"
-       class="text-dark text-decoration-none">
-        Рассылки
-    </a><span class="text-muted">/</span>
-    <a href="{{ mailing.get_absolute_url }}"
-       class="text-dark text-decoration-none">
-        {{ mailing.id }}
-    </a><span class="text-muted">/</span>
-    <a href="{{ mailing.get_delete_url }}"
-       class="text-dark text-decoration-none">
-        Редактировать
-    </a>
 {% endblock %}
 
 {% block content %}
@@ -45,7 +25,7 @@
         {% endfor %}
 
         <input type="submit" class="btn btn-success" value="Редагувати">
-        <a href="{% url "bots-management:mailings:mailing-list" mailing.channel.slug %}" class="btn btn-danger">Отменить</a>
+        <a href="{% url "bots-management:mailings:mailing-list" mailing.bot.slug %}" class="btn btn-danger">Отменить</a>
     </form>
 {% endblock %}
 
