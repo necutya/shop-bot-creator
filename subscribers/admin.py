@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from subscribers.models import Subscriber, Message, Reply
+from subscribers.models import Subscriber
 
 
 @admin.register(Subscriber)
@@ -8,14 +8,3 @@ class SubscriberAdmin(admin.ModelAdmin):
     list_display = ("name", "is_active", "is_admin")
     list_filter = ("is_active", "is_admin")
     search_fields = ("name", "info")
-
-
-@admin.register(Message)
-class MessageAdmin(admin.ModelAdmin):
-    list_display = ("id", "sender", "created")
-
-
-@admin.register(Reply)
-class HelpReplyAdmin(admin.ModelAdmin):
-    list_display = ("id", "message", "text", "is_started", "is_closed")
-    list_filter = ("is_started",)

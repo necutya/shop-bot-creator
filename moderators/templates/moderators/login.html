@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Авторизация{% endblock %}
+{% block title %}Авторизація{% endblock %}
 
 {% block content %}
     <div class="row d-flex justify-content-center">
@@ -8,11 +8,11 @@
             {% if next %}
                 {% if user.is_authenticated %}
                     <div class="alert alert-warning" role="alert">
-                        У вас нет доступа к данной странице.
+                        Ви не маєте доступу до цієї сторінки
                     </div>
                 {% else %}
                     <div class="alert alert-warning" role="alert">
-                        Войдите в аккаунт для доступа к данной странице
+                        Увійдіть до аккаунту.
                     </div>
                 {% endif %}
             {% endif %}
@@ -20,7 +20,7 @@
             <h2 class="display-5 text-center text-light ">Вхід до акаунту</h2>
             {% if form.errors %}
                 <div class="alert alert-danger" role="alert">
-                    Ваши логин и пароль не совпадают. Попробуйте ещё раз.
+                    Ваш логін та пароль не співпадають.
                 </div>
             {% endif %}
             {% for field in form %}
@@ -32,9 +32,9 @@
                 {% endif %}
             {% endfor %}
 
-            <a href="#" class="text-link" id="ajax-reset-password">Забыли пароль?</a>
-            <a href="{% url "moderators:signup" %}" class="text-link" id="signup">Нет акаунта?</a>
-            <button type="submit" class="btn btn-light w-50 mt-3">Ввойти</button>
+            <a href="#" class="text-link" id="ajax-reset-password">Забули пароль?</a>
+            <a href="{% url "moderators:signup" %}" class="text-link" id="signup">Немає акаунта?</a>
+            <button type="submit" class="btn btn-light w-50 mt-3">Увійти</button>
         </form>
     </div>
 {% endblock %}

@@ -7,9 +7,9 @@ from telebot.types import Message
 from telegram_api.api import (
     send_photo as tg_send_photo,
     send_message as tg_send_message,
-    send_video as tg_send_video,
-    send_document as tg_send_document,
-    send_location as tg_send_location,
+    # send_video as tg_send_video,
+    # send_document as tg_send_document,
+    # send_location as tg_send_location,
     send_sticker as tg_send_sticker,
     delete_message as tg_delete_message
 )

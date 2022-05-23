@@ -6,11 +6,10 @@ import requests
 from django.conf import settings
 
 from telebot import TeleBot
-from telebot.types import ReplyKeyboardMarkup, Message
+from telebot.types import ReplyKeyboardMarkup, Message, InlineKeyboardMarkup, InputMediaPhoto
 from telebot.apihelper import ApiException
 
 from moviepy.editor import VideoFileClip
-
 
 logger = logging.getLogger(__name__)
 
@@ -31,8 +30,9 @@ def get_bot_info(token: str) -> dict:
     return res.json().get('result')
 
 
-def send_message(chat_id: int, text: str, token: str,
-                 reply_markup: ReplyKeyboardMarkup = None,
+def send_message(chat_id: str, text: str, token: str,
+                 reply_markup: Union[ReplyKeyboardMarkup, InlineKeyboardMarkup] = None,
+                 parse_mode: str = 'HTML',
                  **kwargs) -> Message:
     """Sends `sendMessage` API request to the telegramAPI.
 
@@ -47,7 +47,9 @@ def send_message(chat_id: int, text: str, token: str,
         response: Message = TeleBot(token).send_message(
             chat_id=chat_id,
             text=text,
-            reply_markup=reply_markup
+            reply_markup=reply_markup,
+            parse_mode=parse_mode,
+            **kwargs
         )
         return response
     except ApiException as e:
@@ -64,9 +66,81 @@ def send_message(chat_id: int, text: str, token: str,
         )
 
 
-def send_photo(chat_id: int, token: str,
-               action: object, file_path: str = None,
-               file_id: str = None, **kwargs) -> Message:
+def edit_message(chat_id: str, message_id: str, text: str, token: str,
+                 reply_markup: Union[ReplyKeyboardMarkup, InlineKeyboardMarkup] = None,
+                 parse_mode: str = 'HTML',
+                 **kwargs) -> Message:
+    """Sends `sendMessage` API request to the telegramAPI.
+
+    chat_id: Id of the chat.
+    text: Text of the message.
+    reply_markup: Instance of the `InlineKeyboardMarkup`.
+    token: bot's token
+
+    Returns: None.
+    """
+    try:
+        response: Message = TeleBot(token).edit_message_text(
+            chat_id=chat_id,
+            text=text,
+            message_id=message_id,
+            reply_markup=reply_markup,
+            parse_mode=parse_mode,
+            **kwargs
+        )
+        return response
+    except ApiException as e:
+        logger.warning(
+            f"""Edit message to {chat_id} failed.
+            token: {token}.
+            Error: {e}"""
+        )
+    except Exception as e:
+        logger.critical(
+            f"""Edit message to {chat_id} failed.
+            token: {token}.
+            Error: {e}"""
+        )
+
+
+def edit_message_reply_markup(chat_id: str, message_id: str, token: str,
+                              reply_markup: Union[ReplyKeyboardMarkup, InlineKeyboardMarkup] = None,
+                              **kwargs) -> Message:
+    """Sends `sendMessage` API request to the telegramAPI.
+
+    chat_id: Id of the chat.
+    text: Text of the message.
+    reply_markup: Instance of the `InlineKeyboardMarkup`.
+    token: bot's token
+
+    Returns: None.
+    """
+    try:
+        response: Message = TeleBot(token).edit_message_reply_markup(
+            chat_id=chat_id,
+            message_id=message_id,
+            reply_markup=reply_markup,
+            **kwargs
+        )
+        return response
+    except ApiException as e:
+        logger.warning(
+            f"""Edit message to {chat_id} failed.
+            token: {token}.
+            Error: {e}"""
+        )
+    except Exception as e:
+        logger.critical(
+            f"""Edit message to {chat_id} failed.
+            token: {token}.
+            Error: {e}"""
+        )
+
+
+def send_photo(token: str, chat_id: str, caption: str = None, photo: str = None,
+               photo_id: str = None, parse_mode="HTML",
+               reply_markup: Union[ReplyKeyboardMarkup, InlineKeyboardMarkup] = None,
+               **kwargs) -> Message:
     """Sends `sendPhoto` API request to the telegramAPI.
 
     chat_id: Id of the chat.
@@ -76,23 +150,74 @@ def send_photo(chat_id: int, token: str,
 
     Returns: None.
     """
-    if not file_id:
-        file_id = check_file_id(action, file_path, token)
-    if not file_id and not file_path:
-        raise ValueError('file_id or file_path  must be provided')
+    # if not file_id:
+    #     file_id = check_file_id(action, file_path, token)
+    if not photo_id and not photo:
+        raise ValueError('file_id or file_path must be provided')
 
     try:
-        if file_id:
+        if photo_id:
             response: Message = TeleBot(token).send_photo(
-               chat_id=chat_id, photo=file_id
+                chat_id=chat_id, photo=photo_id, caption=caption, parse_mode=parse_mode, reply_markup=reply_markup,
             )
         else:
-            with open(file_path, 'rb') as file:
-                response: Message = TeleBot(token).send_photo(
-                    chat_id=chat_id, photo=file
-                )
-                file_id = response.json.get('photo')[-1].get('file_id')
-                update_or_create_file_id(action, file_path, file_id, token)
+            response: Message = TeleBot(token).send_photo(
+                chat_id=chat_id, photo=photo, caption=caption, parse_mode=parse_mode, reply_markup=reply_markup,
+            )
+            # file_id = response.json.get('photo')[-1].get('file_id')
+            # update_or_create_file_id(action, file_path, file_id, token)
+
+        return response
+
+    except ApiException as e:
+        logger.warning(
+            f"""Edit photo to {chat_id} failed.
+            token: {token}.
+            Error ApiException: {e}"""
+        )
+    except Exception as e:
+        logger.critical(
+            f"""Edit photo to {chat_id} failed.
+            token: {token}.
+            Error Exception: {e}"""
+        )
+
+
+def edit_photo(token: str, chat_id: str, message_id: str, caption: str = None, photo: str = None,
+               photo_id: str = None, parse_mode="HTML",
+               reply_markup: Union[ReplyKeyboardMarkup, InlineKeyboardMarkup] = None,
+               **kwargs) -> Message:
+    """Sends `sendPhoto` API request to the telegramAPI.
+
+    chat_id: Id of the chat.
+    file_path: path to the file.
+    file_id: id of the file
+    token: bot's token
+
+    Returns: None.
+    """
+    # if not file_id:
+    #     file_id = check_file_id(action, file_path, token)
+    if not photo_id and not photo:
+        raise ValueError('file_id or file_path must be provided')
+
+    try:
+        if photo_id:
+            response: Message = TeleBot(token).edit_message_media(
+                chat_id=chat_id, media=photo_id, reply_markup=reply_markup, message_id=message_id,
+            )
+        else:
+            response: Message = TeleBot(token).edit_message_media(
+                InputMediaPhoto(photo), chat_id=chat_id, message_id=message_id,
+            )
+
+        if caption:
+            response: Message = TeleBot(token).edit_message_caption(
+                chat_id=chat_id, caption=caption, reply_markup=reply_markup, message_id=message_id,
+                parse_mode=parse_mode
+            )
+            # file_id = response.json.get('photo')[-1].get('file_id')
+            # update_or_create_file_id(action, file_path, file_id, token)
         return response
 
     except ApiException as e:
@@ -109,138 +234,32 @@ def send_photo(chat_id: int, token: str,
         )
 
 
-def check_file_id(action: object,
-                  file_path: str,
-                  token: str) -> Union[str, None]:
-    from old_code_for_use.keyboards import IdFilesInMessenger
-    info = IdFilesInMessenger.objects.filter(action=action, token_tg=token)
-    if info.exists():
-        info = info.first()
-        if info.path_media_tg == file_path:
-            return info.telegram_id
-
-
-def update_or_create_file_id(action: object,
-                             file_path: str = None,
-                             file_id: str = None,
-                             token: str = None) -> "keIdFilesInMessenger":
-    from old_code_for_use.keyboards import IdFilesInMessenger
-    return IdFilesInMessenger.objects.update_or_create(
-        action=action,
-        token_tg=token,
-        defaults={
-            'action': action,
-            'path_media_tg': file_path,
-            'telegram_id': file_id,
-            'token_tg': token,
-        }
-    )
-
-
-def send_video(chat_id: int, token: str,
-               action: object, file_path: str = None,
-               file_id: str = None, **kwargs) -> Message:
-    """Sends `sendVideo` API request to the telegramAPI.
-
-    chat_id: Id of the chat.
-    file_path: path to the file.
-    file_id: id of the file.
-    token: bot's token
-
-    Returns: None.
-    """
-    if not file_id:
-        file_id = check_file_id(action, file_path, token)
-    if not file_id and not file_path:
-        raise ValueError('file_id or file_path  must be provided')
-    try:
-        if file_id:
-            response: Message = TeleBot(token).send_video(
-                chat_id=chat_id, data=file_id
-            )
-        else:
-            with open(file_path, 'rb') as file:
-                clip = VideoFileClip(file_path)
-                response: Message = TeleBot(token).send_video(
-                    chat_id=chat_id, data=file, duration=clip.duration
-                )
-                file_id = response.json.get('video').get('file_id')
-                update_or_create_file_id(action, file_path, file_id)
-        return response
-
-    except ApiException as e:
-        logger.warning(
-            f"""Send video to {chat_id} failed.
-            token: {token}.
-            Error: {e}"""
-        )
-    except Exception as e:
-        logger.warning(
-            f"""Send video to {chat_id} failed.
-            token: {token}.
-            Error: {e}"""
-        )
-
-
-def send_document(chat_id: int, token: str,
-                  action: object, file_path: str = None,
-                  file_id: str = None, **kwargs) -> Message:
-    """Sends `sendDocument` API request to the telegramAPI.
-
-    chat_id: Id of the chat.
-    file_path: path to the file.
-    file_id: id of the file
-    token: bot's token
-
-    Returns: None.
-    """
-    if not file_id:
-        file_id = check_file_id(action, file_path, token)
-    if not file_id and not file_path:
-        raise ValueError('file_id or file_path  must be provided')
-    try:
-        if file_id:
-            response: Message = TeleBot(token).send_document(
-                chat_id=chat_id, data=file_id
-            )
-        else:
-            with open(file_path, 'rb') as file:
-                response: Message = TeleBot(token).send_document(
-                    chat_id=chat_id, data=file
-                )
-                file_id = response.json.get('document').get('file_id')
-                update_or_create_file_id(action, file_path, file_id)
-        return response
-
-    except ApiException as e:
-        print(f"LOGGING: {e}")
-    except Exception as e:
-        print(f"LOGGING: {e}")
-
-
-def send_location(chat_id: int, token: str,
-                  lat: int, lon: int, **kwargs) -> Message:
-    """Sends `sendLocation` API request to the telegramAPI.
-
-    chat_id: Id of the chat.
-    lat: Latitude.
-    lon: Longitude.
-    token: bot's token
-
-    Returns: None.
-    """
-    try:
-        response: Message = TeleBot(token).send_location(
-            chat_id=chat_id,
-            longitude=lon,
-            latitude=lat
-        )
-        return response
-    except ApiException as e:
-        print(f"LOGGING: {e}")
-    except Exception as e:
-        print(f"LOGGING: {e}")
-
+# def check_file_id(action: object,
+#                   file_path: str,
+#                   token: str) -> Union[str, None]:
+#     from old_code_for_use.keyboards import IdFilesInMessenger
+#     info = IdFilesInMessenger.objects.filter(action=action, token_tg=token)
+#     if info.exists():
+#         info = info.first()
+#         if info.path_media_tg == file_path:
+#             return info.telegram_id
+#
+#
+# def update_or_create_file_id(action: object,
+#                              file_path: str = None,
+#                              file_id: str = None,
+#                              token: str = None) -> "keIdFilesInMessenger":
+#     from old_code_for_use.keyboards import IdFilesInMessenger
+#     return IdFilesInMessenger.objects.update_or_create(
+#         action=action,
+#         token_tg=token,
+#         defaults={
+#             'action': action,
+#             'path_media_tg': file_path,
+#             'telegram_id': file_id,
+#             'token_tg': token,
+#         }
+#     )
 
 def send_sticker(chat_id: int, token: str,
                  sticker_path: str = None,
@@ -303,13 +322,13 @@ def set_webhook(slug: str, host: str, token: str) -> dict:
     """
     Sets telegram webhook for certain channel.
     """
-    webhook = f"https://{host}/telegram_prod/{slug}/"
+    webhook = f"https://{host}/telegram/api/{slug}/"
     url = f"https://api.telegram.org/bot{token}/setWebhook?url={webhook}"
     response = requests.get(url)
-    # logger.warning(
-    #     f"""Set telegram-webhook with ajax {url}.
-    #         token {token}. Answer: {response.text}"""
-    # )
+    logger.warning(
+        f"""Set telegram-webhook {url}.
+            token {token}. Answer: {response.text}"""
+    )
     return response.json()
 
 
@@ -325,3 +344,37 @@ def unset_webhook_ajax(token: str) -> dict:
             token {token}. Answer: {response.text}"""
     )
     return response.json()
+
+
+def send_callback_answer(callback_query_id: str, text: str, token: str,
+
+          **kwargs) -> Message:
+    """Sends `sendMessage` API request to the telegramAPI.
+
+    chat_id: Id of the chat.
+    text: Text of the message.
+    reply_markup: Instance of the `InlineKeyboardMarkup`.
+    token: bot's token
+
+    Returns: None.
+    """
+    try:
+        response: Message = TeleBot(token).answer_callback_query(
+            callback_query_id=callback_query_id,
+            text=text,
+            show_alert=True,
+            **kwargs
+        )
+        return response
+    except ApiException as e:
+        logger.warning(
+            f"""Callback answer to {callback_query_id} failed.
+            token: {token}.
+            Error: {e}"""
+        )
+    except Exception as e:
+        logger.critical(
+            f"""Callback answer to {callback_query_id} failed.
+            token: {token}.
+            Error: {e}"""
+        )

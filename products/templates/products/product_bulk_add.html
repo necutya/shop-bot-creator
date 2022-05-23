@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %} Імпорт товарів{% endblock %}
+
+{% block links %}
+    <a href="{% url 'bots-management:bot-list' %}"
+       class="mt-3 mb-3 text-dark text-decoration-none">
+        Боти
+    </a><span class="text-dark">/</span>
+    <a href="{% url 'bots-management:bot-list' %}"
+       class="mt-3 mb-3 text-dark text-decoration-none">
+        {{ bot.name }}</a>
+    <span class="text-muted">/Імпорт товарів</span>
+
+{% endblock %}
+
+{% block content %}
+    <div class="d-flex flex-column align-items-center">
+        <h1 class="font-weight-normal">Імпорт товарів в <a href="{{ bot.get_absolute_url }}"> {{ bot.name }} </a></h1>
+        <p class="">Для імпорту товарів треба скачати шаблон Excel файлу для заповнення.
+            <a class="btn btn-primary"
+               href="{% url 'bots-management:products:product-create-bulk-template-download' bot.slug %}">Завантажити</a>
+            <br>
+            Заповнити усі необхідні поля, які позначені жирним шрифтом, та завантижити файл до системи через форму, яка
+            знаходиться нижче.</p>
+        <form method="POST" enctype="multipart/form-data" class="w-50">
+            {% if error_msg %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error_msg }}
+                </div>
+            {% endif %}
+            {% csrf_token %}
+            <div class="custom-file mb-2">
+                {{ form.file }}
+                <label class="custom-file-label" for="customFile">{{ form.file.label_tag }}</label>
+                {% if form.file.errors %}
+                    <div class="text-danger mb-2"> {{ form.file.errors }} </div>
+                {% endif %}
+            </div>
+            <input type="submit" class="btn btn-success mr-2" value="Створити">
+            <a href="{% url "bots-management:products:product-list" bot.slug %}" class="btn btn-danger">Назад</a>
+        </form>
+    </div>
+{% endblock %}

@@ -1,32 +1,19 @@
 from django.urls import path
 
 from subscribers.views import (
-    SubscribersListView, SubscriberMessagesListView,
-    HelpMessagesListView, HelpMessageReplyView,
-    HelpMessageReplyDetailView, SubscriberUpdateView
+    SubscribersListView,
+    ban_subscriber,
+    unban_subscriber
 )
 
 app_name = "subscribers"
 
 urlpatterns = [
-
-    path("<str:slug>/<int:pk>/", SubscriberUpdateView.as_view(),
-         name="subscriber-update"),
-    path("<str:slug>/<str:messenger>_<str:status>/",
+    path("subscribers/",
          SubscribersListView.as_view(),
          name="subscriber-list"),
-
-    path("<str:slug>/messages/<str:messenger>",
-         SubscriberMessagesListView.as_view(),
-         name="subscriber-messages"),
-
-    path("<str:slug>/help-messages",
-         HelpMessagesListView.as_view(),
-         name="help-messages"),
-    path("<str:slug>/help-messages/<int:pk>/",
-         HelpMessageReplyDetailView.as_view(),
-         name="help-message-detail"),
-    path("<str:slug>/help-messages/<int:pk>/reply/",
-         HelpMessageReplyView.as_view(),
-         name="help-message-reply")
+    path("subscribers/<int:sub_id>/ban", ban_subscriber,
+         name="subscriber-ban"),
+    path("subscribers/<int:sub_id>/unban", unban_subscriber,
+         name="subscriber-unban"),
 ]

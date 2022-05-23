@@ -1,0 +1,15 @@
+HOME_ACTION_ID = 1
+CATALOG_ACTION_ID = 2
+CATEGORY_ACTION_ID = 3
+HELP_ACTION_ID = 4
+ORDERS_ACTION_ID = 5
+BASKET_ACTION_ID = 6
+
+ACTION_MAP = {
+    'Головна': HOME_ACTION_ID,
+    'Каталог': CATALOG_ACTION_ID,
+    'Категорії': CATEGORY_ACTION_ID,
+    'Замовлення': ORDERS_ACTION_ID,
+    'Допомога': HELP_ACTION_ID,
+    'Кошик': BASKET_ACTION_ID
+}

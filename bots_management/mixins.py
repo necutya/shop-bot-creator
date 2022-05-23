@@ -10,11 +10,6 @@ class ModeratorRequiredMixin(AccessMixin):
     """
 
     def dispatch(self, request, *args, **kwargs):
-        bot = get_bot_by_slug(kwargs.get("slug"))
-        if bot:
-            if all([not request.user.is_superuser,
-                    request.user is bot.owner]):
-                return self.handle_no_permission()
         return super().dispatch(request, *args, **kwargs)
 
 
@@ -28,4 +23,5 @@ class OwnerRequiredMixin(AccessMixin):
 
         if bot and request.user != bot.owner:
             return self.handle_no_permission()
+
         return super().dispatch(request, *args, **kwargs)

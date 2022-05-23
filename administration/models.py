@@ -5,8 +5,8 @@ class Country(models.Model):
     """
     All available countries for our project
     """
-    name = models.CharField("Название страны для доставки", max_length=60, unique=True)
-    iso2 = models.CharField("Код страны", max_length=2, unique=True)
+    name = models.CharField("Назва країни", max_length=60, unique=True)
+    iso2 = models.CharField("Код країни", max_length=2, unique=True)
     slug = models.SlugField("Slug")
 
     def __str__(self) -> str:
@@ -17,12 +17,12 @@ class DeliveryType(models.Model):
     """
     All available delivery type for our project
     """
-    name = models.CharField("Название типа доставки", max_length=60)
+    name = models.CharField("Назва типу доставки", max_length=60)
     country = models.ForeignKey(
         Country,
         on_delete=models.CASCADE,
         related_name="deliveries",
-        verbose_name="Страна службы доставки",
+        verbose_name="Країна служби доставки",
         blank=True,
         null=True
     )
@@ -36,7 +36,7 @@ class PaymentType(models.Model):
     """
     All available delivery type for our project
     """
-    name = models.CharField("Название типа доставки", max_length=60)
+    name = models.CharField("Назва типу оплати", max_length=60)
     slug = models.SlugField("Slug")
 
     def __str__(self) -> str:
@@ -47,11 +47,15 @@ class Currency(models.Model):
     """
     All available currencies for our project
     """
-    name = models.CharField("Название валюты", max_length=60)
+    name = models.CharField("Назва валюти", max_length=60)
     symbol = models.CharField("Символ", max_length=1)
-    country_id = models.OneToOneField(
+    country = models.OneToOneField(
         Country,
-        verbose_name="Валюта страны",
+        verbose_name="Валюта країни",
         related_name="currency",
         on_delete=models.CASCADE,
     )
+
+    def __str__(self) -> str:
+        return f"{self.name.upper()} - {self.country.name.title()}"
+

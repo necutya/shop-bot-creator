@@ -8,9 +8,6 @@ from bots_mailings.utils import (
     send_action_to_telegram_users,
     delete_telegram_messages
 )
-from subscribers.services import (
-    get_all_active_subs
-)
 logger = logging.getLogger(__name__)
 
 

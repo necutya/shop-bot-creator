@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %} Список продуктів бота <a href="{{ bot.get_absolute_url }}"> {{ bot.name }} </a>{% endblock %}
+
+{% block links %}
+    <a href="{% url 'bots-management:bot-list' %}"
+       class="mt-3 mb-3 text-dark text-decoration-none">
+        Боти
+    </a><span class="text-dark">/</span>
+    <a href="{% url 'bots-management:bot-list' %}"
+       class="mt-3 mb-3 text-dark text-decoration-none">
+        {{ bot.name }}
+    </a><span class="text-muted">/Товари</span>
+{% endblock %}
+
+{% block content %}
+
+    <h3> Список товарів
+        <a href="{{ bot.get_absolute_url }}">
+            {{ bot.name }}
+        </a>
+    </h3>
+    <div class="mt-3 md-3">
+        <a href="{% url "bots-management:products:product-create" bot.slug %}" class="btn btn-primary">
+            Додати товар</a>
+        <a href="{% url "bots-management:products:product-create-bulk" bot.slug %}" class="btn btn-primary">
+            Імпортувати товар</a>
+    </div>
+    <div class="row align-items-start">
+        {% for product in products %}
+
+            <div class="card m-3 bg-dark text-white" style="width: 25rem;">
+
+                {% if product.photos.first.image %}
+                    <img class="card-img-top" src="{{ product.photos.first.image.url }}" alt="{{ product.name }} image"
+                         style="max-height: 300px; max-width: 25rem">
+                {% elif product.photos.first.image_url %}
+                    <img class="card-img-top" src="{{ product.photos.first.image_url }}" alt="{{ product.name }} image"
+                         style="max-height: 300px; max-width: 25rem">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">Товар "{{ product.name }}"</h5>
+
+                    <p class="card-text">Опис: {{ product.description }}</p>
+                    <p class="card-text">Артикул: {{ product.article }}</p>
+                    <p class="card-text">Ціна: {{ product.price }}</p>
+                    {% if product.categories %}
+                        <p>Категорії:<a href="" class="card-text">
+                            {% for category in product.categories.all %}
+                                {{ category.name }}
+                            {% endfor %}
+                        </a></p>
+                    {% endif %}
+                    <a href="{{ product.get_absolute_url }}" class="btn btn-primary">Детальніше</a>
+                    <a href="{{ product.get_update_url }}" class="btn btn-warning">Редагувати</a>
+                    <a href="{{ product.get_delete_url }}" class="btn btn-danger">Видалити</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

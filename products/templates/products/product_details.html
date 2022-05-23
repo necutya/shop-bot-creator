@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block title %} Список продуктів бота <a href="{{ bot.get_absolute_url }}"> {{ bot.name }} </a>{% endblock %}
+
+{% block links %}
+    <a href="{% url 'bots-management:bot-list' %}"
+       class="mt-3 mb-3 text-dark text-decoration-none">
+        Боти</a><span class="text-dark">/</span>
+    <a href="{% url 'bots-management:bot-list' %}"
+       class="mt-3 mb-3 text-dark text-decoration-none">{{ bot.name }}</a>
+    <a href="{% url 'bots-management:products:product-list' bot.slug %}"
+       class="mt-3 mb-3 text-dark text-decoration-none">/Товари</a>
+    <a href="{% url 'bots-management:products:product-detailed' bot.slug product.id %}"
+       class="mt-3 mb-3 text-dark text-decoration-none">/{{ product.name }} </a>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="col-md-12 mt-5">
+            <section class="panel">
+                <div class="panel-body row">
+                    {% if product.photos.first %}
+                        <div class="col-md-6">
+                            <div class="pro-img-details">
+                                {% if product.photos.first.image %}
+                                    <img class="card-img-top img-thumbnail" src="{{ product.photos.first.image.url }}"
+                                         alt="{{ product.name }} image"
+                                    >
+                                {% elif product.photos.first.image_url %}
+                                    <img class="card-img-top img-thumbnail" src="{{ product.photos.first.image_url }}"
+                                         alt="{{ product.name }} image"
+                                    >
+                                {% endif %}
+                            </div>
+                            <div class="pro-img-list">
+                                {% for secondaryPhoto in product.photos.all %}
+                                    {% if not secondaryPhoto.is_main %}
+                                        <a href="#">
+                                            <img src="{{ secondaryPhoto.image.url }}"
+                                                 alt="{{ product.name }} image {{ forloop.counter }}"
+                                                 class="img-thumbnail">
+                                        </a>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="col-md-6">
+                        <h2>
+                            <a href="#" class="">
+                                {{ product.name.title }}
+                            </a>
+                        </h2>
+                        <p>
+                            {{ product.description }}
+                        </p>
+                        <div class="mb-2">
+                            <p class="">
+                                <strong>Категорії:</strong>
+                                {% for category in product.categories.all %}
+                                    <a rel="tag" href="#">{{ category.name }}</a>
+                                {% endfor %},
+                            </p>
+                            <p class="card-text">Артикул: {{ product.article }}</p>
+                            <p class="card-text">Ціна: <span
+                                    class="pro-price"> {{ product.price }} {{ bot.currency.symbol }} </span></p>
+                            {% if product.discount %}
+                                <p class="card-text">Відсоток знижки: {{ product.discount }}%</p>
+                            {% endif %}
+                            <p class="card-text">Кількість: {{ product.amount }}</p>
+                            <p class="card-text">Видимий товар:
+                                {% if product.visible %}
+                                    &#9989;
+                                {% else %}
+                                    &#10060;
+                                {% endif %}
+                            </p>
+                            <p class="card-text">Кількість лайків: {{ product.likes }} &#9829;</p>
+                            <p class="card-text">Кількіть переглядів: {{ product.views_count }} &#128064;</p>
+                            <p class="card-text">Кількість додавань до корзини: {{ product.add_to_basket_count }}
+                                &#10133;</p>
+                            <p class="card-text">Кількість покупок: {{ product.acquired_count }} &#129530;</p>
+
+                        </div>
+                        <a href="{{ product.get_update_url }}" class="btn btn-warning">Редагувати</a>
+                        <a href="{{ product.get_delete_url }}" class="btn btn-danger">Видалити</a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+{% endblock %}
+
+{% block style %}
+    <style>
+        body {
+            margin-top: 20px;
+        }
+
+        /*panel*/
+        .panel {
+            border: none;
+            box-shadow: none;
+        }
+
+        .panel-heading {
+            border-color: #eff2f7;
+            font-size: 16px;
+            font-weight: 300;
+        }
+
+        .panel-title {
+            color: #2A3542;
+            font-size: 14px;
+            font-weight: 400;
+            margin-bottom: 0;
+            margin-top: 0;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        /*product list*/
+
+        .prod-cat li a {
+            border-bottom: 1px dashed #d9d9d9;
+        }
+
+        .prod-cat li a {
+            color: #3b3b3b;
+        }
+
+        .prod-cat li ul {
+            margin-left: 30px;
+        }
+
+        .prod-cat li ul li a {
+            border-bottom: none;
+        }
+
+        .prod-cat li ul li a:hover, .prod-cat li ul li a:focus, .prod-cat li ul li.active a, .prod-cat li a:hover, .prod-cat li a:focus, .prod-cat li a.active {
+            background: none;
+            color: #ff7261;
+        }
+
+        .pro-lab {
+            margin-right: 20px;
+            font-weight: normal;
+        }
+
+        .pro-sort {
+            padding-right: 20px;
+            float: left;
+        }
+
+        .pro-page-list {
+            margin: 5px 0 0 0;
+        }
+
+        .product-list img {
+            width: 100%;
+            border-radius: 4px 4px 0 0;
+            -webkit-border-radius: 4px 4px 0 0;
+        }
+
+        .product-list .pro-img-box {
+            position: relative;
+        }
+
+        .adtocart {
+            background: #fc5959;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            -webkit-border-radius: 50%;
+            color: #fff;
+            display: inline-block;
+            text-align: center;
+            border: 3px solid #fff;
+            left: 45%;
+            bottom: -25px;
+            position: absolute;
+        }
+
+        .adtocart i {
+            color: #fff;
+            font-size: 25px;
+            line-height: 42px;
+        }
+
+        .pro-title {
+            color: #5A5A5A;
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        .product-list .price {
+            color: #fc5959;
+            font-size: 15px;
+        }
+
+        .pro-img-details {
+            margin-left: -15px;
+        }
+
+        .pro-img-details img {
+            width: 100%;
+        }
+
+        .pro-d-title {
+            font-size: 16px;
+            margin-top: 0;
+        }
+
+        .product_meta {
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+            margin: 15px 0;
+        }
+
+        .product_meta span {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .product_meta a, .pro-price {
+            color: #3160B6;
+        }
+
+        .pro-price, .amount-old {
+            font-size: 18px;
+            padding: 0 10px;
+        }
+
+        .amount-old {
+            text-decoration: line-through;
+        }
+
+        .quantity {
+            width: 120px;
+        }
+
+        .pro-img-list {
+            margin: 10px 0 0 -15px;
+            width: 100%;
+            display: inline-block;
+        }
+
+        .pro-img-list a {
+            float: left;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .pro-d-head {
+            font-size: 18px;
+            font-weight: 300;
+        }
+    </style>
+{% endblock %}

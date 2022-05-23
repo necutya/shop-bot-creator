@@ -1,71 +1,93 @@
 {% extends "base.html" %}
-{% block title %} Підписники каналу {{ channel.name }} {% endblock title %}
+
+{% block title %} Підписники бота {{ bot.name }} {% endblock %}
 
 {% block links %}
-    <a href="{% url 'bots-management:channel-list' %}"
-       class="text-dark text-decoration-none">
-        Канали
-    </a><span class="text-dark">/</span>
-    <a href="{% url 'bots-management:channel-detail' channel.slug %}"
-       class="text-dark text-decoration-none">
-        {{ channel.name }}
-    </a><span class="text-muted">/ Користувачі</span>
+    <a href="{% url 'bots-management:bot-list' %}"
+       class="mt-3 mb-3 text-dark text-decoration-none">Боти</a>
+    <span class="text-dark">/</span>
+    <a href="{% url 'bots-management:bot-list' %}"
+       class="mt-3 mb-3 text-dark text-decoration-none">{{ bot.name }}</a>
+    <span class="text-muted">/</span>
+    <a href="{% url 'bots-management:subscribers:subscriber-list' bot.slug %}"
+       class="mt-3 mb-3 text-dark text-decoration-none">Підписники</a>
 {% endblock %}
+
 {% block content %}
 
-<div class="row justify-content-md-center">
-    <div class="col-md-auto">
-        <form action="" method="post"> {% csrf_token %}
-            {{form.messenger}} {{form.status}}
-            <input type="submit" class="btn btn-secondary btn-sm" value="Показати">
-        </form>
-    </div>
-<table class="table">
-    <thead>
+    <h3> Список підписників бота
+        {{ bot.name }}
+    </h3>
+    <table class="table mt-3 table-striped">
+        <thead class="thead-dark">
         <tr>
-            <td>#</td>
-            <td>Им'я</td>
-            <td>Канал</td>
-            <td>Юзер ID</td>
-            <td>Примітка</td>
-            <td>Аватар</td>
-            <td>Активний</td>
-            <td>Дата підписки</td>
-            <td>Остання дата активності</td>
+            <th scope="col">#</th>
+            <th scope="col">Аватар</th>
+            <th scope="col">Ім'я</th>
+            <th scope="col">Нікнейм</th>
+            <th scope="col">Активний</th>
+            <th scope="col">Дата реєстрації</th>
+            <th scope="col">Адмін</th>
+            <th scope="col"></th>
         </tr>
-    </thead>
-    <tbody>
-    {% for subscriber in subscribers %}
-        <tr>
-            <td>{{forloop.counter }}</td>
-            <td><a href="{% url 'bots-management:subscribers:subscriber-update' channel.slug subscriber.id  %}" title="Редагувати">{{subscriber.name}}</a></td>
-            <td>{{subscriber.messengers_bot}}</td>
-            <td>{{subscriber.user_id}}</td>
-            <td>{{subscriber.info}}</td>
-            <td>
+        </thead>
+        <tbody>
+        {% for subscriber in subscribers %}
+
+            <tr>
+                <th scope="row">{{ forloop.counter }}</th>
                 {% if subscriber.avatar %}
-                    <img src="{{subscriber.avatar}}" width="100px" alt="">
+                    <td><img src="{{ subscriber.avatar }}" alt="subscriber avatar" width="64px"></td>
                 {% endif %}
-            </td>
-            <td>{{subscriber.is_active}} </td>
-            <td>{{subscriber.created}} </td>
-            <td>{{subscriber.updated}} </td>
+                {% if subscriber.name %}
+                    <td class="align-middle">{{ subscriber.name }}</td>
+                {% else %}
+                    <td class="align-middle">-</td>
+                {% endif %}
+                {% if subscriber.username %}
+                    <td class="align-middle"><a href="https://t.me/{{ subscriber.username }}">{{ subscriber.username }}</a></td>
+                {% else %}
+                    <td class="align-middle">-</td>
+                {% endif %}
+                <td class="align-middle">
+                    {% if subscriber.is_active %}
+                        <i class="fas fa-check" style="color: green" data-toggle="tooltip" data-placement="top"
+                           title="Banned!"></i>
+                    {% else %}
+                        <i class="fas fa-ban" style="color: darkred" data-toggle="tooltip" data-placement="top"
+                           title="Active!"></i>
+                    {% endif %}</td>
+                <td class="align-middle">{{ subscriber.created|date:'H:i d/m/Y' }}</td>
+                <td class="align-middle">
+                    {% if subscriber.is_admin %}
+                        <i class="fas fa-check" style="color: green"></i>
+                    {% else %}
+                        <i class="fas fa-times" style="color: darkred"></i>
+                    {% endif %}
+                </td>
+                <td class="align-middle">
+                    {% if not subscriber.is_admin %}
 
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+                        {% if subscriber.is_active %}
+                            <form method="POST" action="{{ subscriber.id }}/ban">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger"><i
+                                        class="fas fa-ban"></i></button>
+                            </form>
 
-</div>
-{% endblock content %}
+                        {% else %}
+                            <form method="POST" action="{{ subscriber.id }}/unban">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-warning"><i
+                                        class="fas fa-undo"></i></button>
+                            </form>
 
+                        {% endif %}
+                    {% endif %}
 
-{% block scripts %}
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet"/>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('.js-example-basic-single').select2();
-        });
-    </script>
-{% endblock scripts %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

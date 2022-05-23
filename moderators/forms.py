@@ -7,32 +7,28 @@ from django.contrib.auth import forms as auth_forms
 class ModeratorRegisterForm(UserCreationForm):
     first_name = forms.CharField(
         max_length=30,
-        required=False,
-        label="Имя",
-        # widget=forms.TextInput(attrs={'class': 'main-form__field'})
+        label="Ім'я",
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
     last_name = forms.CharField(
         max_length=30,
-        required=False,
-        label='Фамилия',
+        label='Призвіще',
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
     username = forms.CharField(
-        label='Логин',
+        label='Логін',
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
     email = forms.EmailField(
-        label='Почтовый адрес',
+        label='Почтова адреса',
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
     password1 = forms.CharField(
         label="Пароль",
-        required=False,
         widget=forms.PasswordInput(attrs={'class': 'form-control'})
     )
     password2 = forms.CharField(
-        label="Подтверждение пароля",
+        label="Підтвердження паролю",
         required=False,
         widget=forms.PasswordInput(attrs={'class': 'form-control'})
     )
@@ -65,21 +61,21 @@ class ModeratorEditProfileForm(auth_forms.UserChangeForm):
     Add label and styles to default UserChangeForm form
     """
     username = forms.CharField(
-        label='Логин',
+        label='Логін',
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
     first_name = forms.CharField(
-        label="Имя",
+        label="Ім'я",
         required=False,
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
     last_name = forms.CharField(
-        label='Фамилия',
+        label='Призвіще',
         required=False,
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
     email = forms.CharField(
-        label='Почтовый адрес',
+        label='Почтова адреса',
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
 
@@ -93,8 +89,7 @@ class ModeratorEditProfileForm(auth_forms.UserChangeForm):
         fields = ('username',
                   'first_name',
                   'last_name',
-                  'email',
-                  'password')
+                  'email')
 
 
 class ModeratorChangePasswordForm(auth_forms.PasswordChangeForm):

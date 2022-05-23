@@ -2,53 +2,147 @@
 {% load static %}
 
 <html lang="en">
-    <head>
-        <!-- Required meta tags -->
-        <meta charset="utf-8">
-        <meta name="viewport"
-              content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <!--  favicon  -->
-            <link rel="shortcut icon" type="image/png" sizes="32x32"  href="{% static 'favicon.ico' %}">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!--  favicon  -->
+    <link rel="shortcut icon" type="image/png" sizes="32x32" href="{% static 'favicon.ico' %}">
 
-        <title>{% block title %} {% endblock title %}</title>
-        {% block style %} {% endblock style %}
+    <script src="https://kit.fontawesome.com/6c2c37fab8.js" crossorigin="anonymous"></script>
+
+    <title>{% block title %} {% endblock title %}</title>
+    {% block style %} {% endblock style %}
 
 
-        <!--    user status bar-->
-    </head>
-    <body>
-        <div class="container-fluid bg-light pt-3 pb-3">
-            <div class="row ">
-                    <div class="col-sm-6">
-                {% block links %}  {% endblock %}
-                    </div>
-                     <div class="col-sm-6">
-                         {% if user.is_authenticated %}
-                         <a href="{% url 'moderators:user-profile' %}" class="btn btn-sm btn-light">
-                             <strong>
-                                Здравствуйте, {{user.username}}
-                             </strong>
-                                &#10002;Редактировать профиль
-                         </a>
-                         <a href="{% url 'moderators:logout' %}" class="btn btn-sm btn-light">&#128682;Выйти</a>
-                         {% else %}
-                            <a href="{% url 'moderators:login' %}" class="btn btn-sm btn-light">Страница входа</a>
-                         {% endif %}
-                     </div>
+    <!--    user status bar-->
+</head>
+<body>
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark justify-content-between">
+    <!-- Brand -->
+    <a class="navbar-brand" href="#">Papabot</a>
+
+    <!-- Links -->
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'bots-management:root' %}">Головна</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'bots-management:info' %}">Інфо</a>
+        </li>
+        {% if user.is_authenticated %}
+
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'bots-management:bot-list' %}">Ваші боти</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'moderators:user-profile' %}">Профіль</a>
+            </li>
+        {% endif %}
+
+
+        <!-- Dropdown -->
+        {#        <li class="nav-item dropdown">#}
+        {#            <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">#}
+        {#                Dropdown link#}
+        {#            </a>#}
+        {#            <div class="dropdown-menu">#}
+        {#                <a class="dropdown-item" href="#">Link 1</a>#}
+        {#                <a class="dropdown-item" href="#">Link 2</a>#}
+        {#                <a class="dropdown-item" href="#">Link 3</a>#}
+        {#            </div>#}
+        {#        </li>#}
+    </ul>
+
+    <ul class="navbar-nav">
+        {% if user.is_authenticated %}
+            <div class="nav-item">
+                <a href="{% url 'moderators:user-profile' %}" class="nav-link">
+                    <strong>
+                        Вітаю, {{ user.username }}
+                    </strong>
+                </a>
             </div>
-        </div>
+            <a href="{% url 'moderators:logout' %}" class="nav-link">&#128682;Вийти</a>
+        {% else %}
+            <a href="{% url 'moderators:login' %}" class="nav-link">Увійти</a>
+            <a href="{% url 'moderators:signup' %}" class="nav-link">Зареєструватися</a>
+        {% endif %}
+    </ul>
 
-        <div class="container-fluid">
-            {% block content %} {% endblock content %}
-        </div>
+</nav>
 
-        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-        {% block scripts %} {% endblock scripts %}
-    </body>
+<div class="container-fluid pt-3 pb-3">
+    <div class="col-sm-6">
+        {% block links %}  {% endblock %}
+    </div>
+</div>
+
+<div class="container-fluid d-flex flex-column mb-5" style="min-height: 69vh">
+    {% block content %} {% endblock content %}
+</div>
+
+{% block modal %} {% endblock modal %}
+
+<footer class="page-footer bg-dark text-center text-white mt-auto">
+    <!-- Grid container -->
+    <div class="container p-4 pb-0">
+        <!-- Section: Social media -->
+        <section class="mb-4">
+            <!-- Facebook -->
+            <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"
+            ><i class="fab fa-facebook-f"></i
+            ></a>
+
+            <!-- Twitter -->
+            <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"
+            ><i class="fab fa-twitter"></i
+            ></a>
+
+            <!-- Google -->
+            <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"
+            ><i class="fab fa-google"></i
+            ></a>
+
+            <!-- Instagram -->
+            <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"
+            ><i class="fab fa-instagram"></i
+            ></a>
+
+            <!-- Linkedin -->
+            <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"
+            ><i class="fab fa-linkedin-in"></i
+            ></a>
+
+            <!-- Github -->
+            <a class="btn btn-outline-light btn-floating m-1" href="#!" role="button"
+            ><i class="fab fa-github"></i
+            ></a>
+        </section>
+        <!-- Section: Social media -->
+    </div>
+    <!-- Grid container -->
+
+    <!-- Copyright -->
+    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+        © 2020
+    </div>
+    <!-- Copyright -->
+</footer>
+
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+{% block scripts %} {% endblock scripts %}
+</body>
 </html>

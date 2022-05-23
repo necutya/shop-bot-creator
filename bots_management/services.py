@@ -16,13 +16,6 @@ def get_bot_by_slug(slug: str) -> Union[Bot, None]:
     return Bot.objects.filter(slug=slug).first()
 
 
-def get_all_available_bots_to_moderator(user: User) -> QuerySet:
-    """
-    Returns all available bots to moderator.
-    """
-    return user.bots_to_management.all()
-
-
 def get_all_users_bots(user: User) -> QuerySet:
     """
     Returns all available channels to moderator.
@@ -49,18 +42,7 @@ def get_bots_to_json() -> json:  # it returns str btw
     return json.dumps(bots)
 
 
-# TODO find a better solution
-def extract_data(request):
-    tmp = request.POST.dict()
-    for key, value in tmp.items():
-        if value == 'true':
-            tmp[key] = True
-        if value == 'false':
-            tmp[key] = False
-    return tmp
-
-
-def get_moderators_to_json() -> json:   # it returns str btw
+def get_moderators_to_json() -> json:  # it returns str btw
     moderators = get_user_model().objects.all()
     moderators = [{'name': moderator.username,
                    'id': moderator.id} for moderator in moderators]

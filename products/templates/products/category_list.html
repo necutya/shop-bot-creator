@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %} Список продуктів бота  {{ bot.name }} {% endblock %}
+
+{% block links %}
+    <a href="{% url 'bots-management:bot-list' %}"
+       class="mt-3 mb-3 text-dark text-decoration-none">Боти</a>
+    <span class="text-dark">/</span>
+    <a href="{% url 'bots-management:bot-list' %}"
+       class="mt-3 mb-3 text-dark text-decoration-none">{{ bot.name }}</a>
+    <span class="text-muted">/</span>
+    <a href="{% url 'bots-management:products:category-list' bot.slug %}"
+       class="mt-3 mb-3 text-dark text-decoration-none">Категорії</a>
+{% endblock %}
+
+{% block content %}
+
+    <h3> Список категорій товарів бота
+            {{ bot.name }}
+    </h3>
+    <div class="mt-3 md-3">
+        <a href="{% url "bots-management:products:category-create" bot.slug %}" class="btn btn-primary">
+            Додати категорію</a>
+    </div>
+    <table class="table mt-3 table-striped">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Назва</th>
+            <th scope="col">Опис</th>
+            <th scope="col" >Дії</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for category in categories %}
+
+            <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>{{ category.name }}</td>
+                <td>{{ category.description }}</td>
+                <td>
+                    <a href="{{ category.get_update_url }}" type="button" class="btn btn-success"><i
+                            class="fas fa-edit"></i></a>
+                    <a href="{{ category.get_delete_url }}" type="button" class="btn btn-danger"><i
+                            class="far fa-trash-alt"></i></a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,10 +1,15 @@
 import os
+
+import redis
 from dotenv import load_dotenv
 
 # Use .env file for creating env variables
 load_dotenv()
 
 SITE_URL = os.getenv('SITE_URL')
+
+REDIS_HOST = os.getenv('REDIS_HOST')
+REDIS_PORT = int(os.getenv('REDIS_PORT'))
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -44,8 +49,6 @@ INSTALLED_APPS = [
     "moderators.apps.ModeratorsConfig",
     "products.apps.ProductsConfig",
     "orders.apps.OrdersConfig",
-    # "old_code_for_use.analytics.apps.AnalyticsConfig",
-    # "django_nose",
 ]
 
 MIDDLEWARE = [
@@ -98,9 +101,12 @@ AUTH_PASSWORD_VALIDATORS = [
              "NumericPasswordValidator", },
 ]
 
+FILE_UPLOAD_HANDLERS = ("django_excel.ExcelMemoryFileUploadHandler",
+                        "django_excel.TemporaryExcelFileUploadHandler")
+
 # Locale settings
-# LANGUAGE_CODE = "uk-UA"
-LANGUAGE_CODE = 'ru-RU'
+LANGUAGE_CODE = "uk-UA"
+# LANGUAGE_CODE = 'ru-RU'
 TIME_ZONE = "Europe/Kiev"
 USE_I18N = True
 USE_L10N = True
@@ -222,3 +228,9 @@ CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
 #     '--cover-package=moderators',
 #     '--cover-html'
 # ]
+
+redis_instance = redis.StrictRedis(
+    host=REDIS_HOST,
+    port=REDIS_PORT,
+    db=0,
+)

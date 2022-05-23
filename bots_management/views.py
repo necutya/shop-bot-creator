@@ -19,19 +19,18 @@ from telegram_api.api import (
 
 )
 from telegram_api.handlers import (
-    event_handler_tg
+    handle_telegram_event
 )
 
 from .forms import (
-     BotForm
+    BotForm
 )
 from .mixins import ModeratorRequiredMixin, OwnerRequiredMixin
 from .models import Bot
 from .services import (
     get_bot_by_slug,
-    get_all_available_bots_to_moderator,
     get_all_users_bots,
-    get_bots_to_json, extract_data,
+    get_bots_to_json,
     get_moderators_to_json,
 )
 
@@ -41,8 +40,10 @@ logger = logging.getLogger(__name__)
 
 
 def root_view(request):
-    return redirect("bots-management:bot-list")
+    return render(request, 'landing.html')
 
+def info_view(request):
+    return render(request, 'info.html')
 
 def notfound(request, exception=None):
     """
@@ -65,12 +66,11 @@ class BotListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(*args, **kwargs)
 
         user = self.request.user
-        context["bots_to_management"] = get_all_available_bots_to_moderator(user)
         context["bots"] = get_all_users_bots(user)
         return context
 
 
-class BotDetailView(ModeratorRequiredMixin, DetailView):
+class BotDetailView(OwnerRequiredMixin, DetailView):
     """
     Get info can only moderator or superuser.
     """
@@ -108,14 +108,13 @@ class BotUpdateView(OwnerRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse_lazy(
-            "bots-management:bot-detail",
-            kwargs={"slug": self.object.slug}
+            "bots-management:bot-list",
         )
 
     def get_form(self, *args, **kwargs):
         bot = get_bot_by_slug(self.kwargs["slug"])
         if bot:
-            return BotForm(**self.get_form_kwargs())
+            return BotForm(**self.get_form_kwargs(), user=self.request.user)
         else:
             raise Http404
 
@@ -128,8 +127,7 @@ class BotCreateView(LoginRequiredMixin, CreateView):
     template_name = "bots_management/bot_add.html"
 
     def get_form(self, *args, **kwargs):
-        user = self.request.user
-        return BotForm(*args, **self.get_form_kwargs(), user=user)
+        return BotForm(*args, **self.get_form_kwargs(), user=self.request.user)
 
     def get_success_url(self):
         return reverse_lazy(
@@ -138,7 +136,7 @@ class BotCreateView(LoginRequiredMixin, CreateView):
         )
 
 
-class BotDeleteView(DeleteView):
+class BotDeleteView(OwnerRequiredMixin, DeleteView):
     """
     Channel can delete only superuser.
     """
@@ -155,55 +153,7 @@ def telegram_index(request, slug):
             logger.warning(
                 f"""\n {incoming_data} \n"""
             )
-        event_handler_tg(incoming_data=incoming_data, channel_slug=slug)
+        handle_telegram_event(incoming_data=incoming_data, bot_slug=slug)
         return HttpResponse(status=200)
 
     return HttpResponse(status=404)
-
-
-# TODO: fix this
-
-# def ajax_channels_update(request):
-#     """
-#     Create or update channel with ajax
-#     """
-#     if request.is_ajax() and request.method == "POST":
-#         data = extract_data(request)
-#         channel_id = data.pop('id')
-#         if channel_id:
-#             Channel.objects.update_or_create(
-#                 id=channel_id,
-#                 defaults=data,
-#             )
-#         else:
-#             Channel(**data).save()
-#         return HttpResponse(get_channel_to_json())
-#     else:
-#         raise Http404
-
-
-def ajax_get_channels(request):
-    """
-        Get list of channels
-    """
-    if request.is_ajax():
-        return HttpResponse(get_bots_to_json())
-    return Http404
-
-
-def ajax_get_moderators(request):
-    """
-        Get list of channels
-    """
-    if request.is_ajax():
-        return HttpResponse(get_moderators_to_json())
-    return Http404
-
-
-#
-# def statistics_view(request):
-#     """
-#         Template for new front
-#     """
-#     form = ChannelFrontForm()
-#     return render(request, "bots_management/statistics.html", {"form": form})
